@@ -1,8 +1,7 @@
-// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { faker } = require('@faker-js/faker');
+const { faker, fakerPL, fakerFR, fakerEN_US } = require('@faker-js/faker');
 
 const app = express();
 const port = 5000;
@@ -11,27 +10,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-function generateRandomPhoneNumber(region) {
-  let phoneNumber;
-  if (region === 'US') {
-    phoneNumber = faker.phone.phoneNumberFormat(); // US phone number format
-  } else if (region === 'France') {
-    phoneNumber = faker.phone.phoneNumberFormat('+33 ## ## ## ## ##'); // France phone number format
-  } else if (region === 'Poland') {
-    phoneNumber = faker.phone.phoneNumberFormat('+48 ### ### ###'); // Poland phone number format
-  } else {
-    // Add more conditions for other regions as needed
-    phoneNumber = faker.phone.phoneNumberFormat();
-  }
-  return phoneNumber.replace(/[-\s]/g, ''); // Remove dashes and spaces for simplicity
-}
-
-
 
 function applyErrors(text, errorAmount) {
   const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < errorAmount; i++) {
-    const errorType = Math.floor(Math.random() * 3); // 0: delete, 1: add, 2: swap
+    const errorType = Math.floor(Math.random() * 3); 
     const position = Math.floor(Math.random() * text.length);
 
     if (errorType === 0 && text.length > 1) {
@@ -52,14 +35,34 @@ function generateData(region, seed, errorAmount, page) {
   const data = [];
 
   for (let i = 0; i < 20; i++) {
-    const name = faker.name.firstName();
-    const surname = faker.name.lastName();
-    const address = faker.address.city();
-    const phoneNumber = generateRandomPhoneNumber(region);
+    let fullName, address, city, country, phoneNumber;
+    let uid = faker.string.uuid();
+    if (region === 'USA') {
+      fullName = fakerEN_US.person.fullName();
+      city = fakerEN_US.location.city();
+      country = 'USA';
+      phoneNumber = fakerEN_US.phone.number();
+    } else if (region === 'France') {
+      fullName = fakerFR.person.fullName();
+      city = fakerFR.location.city();
+      country = 'France';
+      phoneNumber = fakerFR.phone.number();
+    } else if (region === 'Poland') {
+      fullName = fakerPL.person.fullName();
+      city = fakerPL.location.city();
+      country = 'Poland';
+      phoneNumber = fakerPL.phone.number();
+    } else {
+      fullName = faker.person.fullName()
+      city = faker.location.city();
+      country = 'Unknown';
+      phoneNumber = faker.phone.imei();
+    }
+    address = `${country}, ${city}`;
 
-    const errorName = errorAmount > 0 ? applyErrors(name, errorAmount) : name;
+    const errorName = errorAmount > 0 ? applyErrors(fullName, errorAmount) : fullName;
 
-    data.push({ name: errorName, surname, address, phoneNumber });
+    data.push({ uid, fullName: errorName, address, phoneNumber });
   }
 
   return data;
