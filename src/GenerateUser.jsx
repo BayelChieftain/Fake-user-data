@@ -14,13 +14,14 @@ function GenerateUser() {
   const [page, setPage] = useState(1);
 
   const generate = () => {
-    axios.post('https://nodejs-function-express-generate-user-mrzlaou9z.vercel.app', { region, seed, error_amount: errorAmount, page })
+    axios.post('http://localhost:5000/generate', { region, seed, error_amount: errorAmount, page })
       .then(response => {
         setData([...data, ...response.data]);
         setPage(page + 1);
       })
       .catch(error => console.error(error));
   };
+  
 
   const generateRandomSeed = () => {
     const randomSeed = Math.floor(Math.random() * 1000000).toString();
