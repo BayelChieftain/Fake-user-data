@@ -14,7 +14,7 @@ function GenerateUser() {
   const [page, setPage] = useState(1);
 
   const generate = () => {
-    axios.post('http://localhost:5000/generate', { region, seed, error_amount: errorAmount, page })
+    axios.post('https://nodejs-express-orcin.vercel.app/api/hello', { region, seed, error_amount: errorAmount, page })
       .then(response => {
         setData([...data, ...response.data]);
         setPage(page + 1);
