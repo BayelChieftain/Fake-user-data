@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import RegionSelector from './components/RegionSelector';
 import ErrorInput from './components/ErrorInput';
@@ -41,6 +41,20 @@ function GenerateUser() {
   const handleSliderChange = (e) => {
     setErrorAmount(parseInt(e.target.value, 10));
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+        generate();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, [data])
 
   
 
